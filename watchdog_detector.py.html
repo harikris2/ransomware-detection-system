@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>watchdog_detector.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+watchdog_detector.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">watchdog</span><span class="s2">.</span><span class="s1">observers </span><span class="s0">import </span><span class="s1">Observer</span>
+<span class="s0">from </span><span class="s1">watchdog</span><span class="s2">.</span><span class="s1">events </span><span class="s0">import </span><span class="s1">FileSystemEventHandler</span>
+<span class="s0">import </span><span class="s1">time</span>
+<span class="s0">import </span><span class="s1">datetime</span>
+<span class="s0">from </span><span class="s1">database </span><span class="s0">import </span><span class="s1">insert_alert</span>
+
+<span class="s1">folder_path </span><span class="s2">= </span><span class="s3">&quot;test_folder&quot;</span>
+
+
+<span class="s0">class </span><span class="s1">RansomwareHandler</span><span class="s2">(</span><span class="s1">FileSystemEventHandler</span><span class="s2">):</span>
+
+    <span class="s0">def </span><span class="s1">on_created</span><span class="s2">(</span><span class="s1">self</span><span class="s2">, </span><span class="s1">event</span><span class="s2">):</span>
+        <span class="s0">if not </span><span class="s1">event</span><span class="s2">.</span><span class="s1">is_directory</span><span class="s2">:</span>
+            <span class="s1">message </span><span class="s2">= </span><span class="s3">f&quot;</span><span class="s0">{</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()</span><span class="s0">} </span><span class="s3">🚨 CREATED: </span><span class="s0">{</span><span class="s1">event</span><span class="s2">.</span><span class="s1">src_path</span><span class="s0">}</span><span class="s3">&quot;</span>
+            <span class="s1">print</span><span class="s2">(</span><span class="s1">message</span><span class="s2">)</span>
+            <span class="s1">insert_alert</span><span class="s2">(</span><span class="s1">message</span><span class="s2">, </span><span class="s1">str</span><span class="s2">(</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()))</span>
+
+    <span class="s0">def </span><span class="s1">on_modified</span><span class="s2">(</span><span class="s1">self</span><span class="s2">, </span><span class="s1">event</span><span class="s2">):</span>
+        <span class="s0">if not </span><span class="s1">event</span><span class="s2">.</span><span class="s1">is_directory</span><span class="s2">:</span>
+            <span class="s1">message </span><span class="s2">= </span><span class="s3">f&quot;</span><span class="s0">{</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()</span><span class="s0">} </span><span class="s3">⚠ MODIFIED: </span><span class="s0">{</span><span class="s1">event</span><span class="s2">.</span><span class="s1">src_path</span><span class="s0">}</span><span class="s3">&quot;</span>
+            <span class="s1">print</span><span class="s2">(</span><span class="s1">message</span><span class="s2">)</span>
+            <span class="s1">insert_alert</span><span class="s2">(</span><span class="s1">message</span><span class="s2">, </span><span class="s1">str</span><span class="s2">(</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()))</span>
+
+    <span class="s0">def </span><span class="s1">on_deleted</span><span class="s2">(</span><span class="s1">self</span><span class="s2">, </span><span class="s1">event</span><span class="s2">):</span>
+        <span class="s0">if not </span><span class="s1">event</span><span class="s2">.</span><span class="s1">is_directory</span><span class="s2">:</span>
+            <span class="s1">message </span><span class="s2">= </span><span class="s3">f&quot;</span><span class="s0">{</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()</span><span class="s0">} </span><span class="s3">❌ DELETED: </span><span class="s0">{</span><span class="s1">event</span><span class="s2">.</span><span class="s1">src_path</span><span class="s0">}</span><span class="s3">&quot;</span>
+            <span class="s1">print</span><span class="s2">(</span><span class="s1">message</span><span class="s2">)</span>
+            <span class="s1">insert_alert</span><span class="s2">(</span><span class="s1">message</span><span class="s2">, </span><span class="s1">str</span><span class="s2">(</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()))</span>
+
+
+<span class="s1">observer </span><span class="s2">= </span><span class="s1">Observer</span><span class="s2">()</span>
+<span class="s1">observer</span><span class="s2">.</span><span class="s1">schedule</span><span class="s2">(</span><span class="s1">RansomwareHandler</span><span class="s2">(), </span><span class="s1">folder_path</span><span class="s2">, </span><span class="s1">recursive</span><span class="s2">=</span><span class="s0">False</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">start_watchdog</span><span class="s2">():</span>
+    <span class="s1">observer</span><span class="s2">.</span><span class="s1">start</span><span class="s2">()</span>
+    <span class="s1">print</span><span class="s2">(</span><span class="s3">&quot;Watchdog started...&quot;</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">stop_watchdog</span><span class="s2">():</span>
+    <span class="s1">observer</span><span class="s2">.</span><span class="s1">stop</span><span class="s2">()</span>
+    <span class="s1">observer</span><span class="s2">.</span><span class="s1">join</span><span class="s2">()</span>
+    <span class="s1">print</span><span class="s2">(</span><span class="s3">&quot;Watchdog stopped&quot;</span><span class="s2">)</span></pre>
+</body>
+</html>

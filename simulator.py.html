@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>simulator.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+simulator.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">os</span>
+<span class="s0">import </span><span class="s1">time</span>
+
+<span class="s1">folder_path </span><span class="s2">= </span><span class="s3">&quot;test_folder&quot;</span>
+
+<span class="s1">files </span><span class="s2">= [</span><span class="s1">f </span><span class="s0">for </span><span class="s1">f </span><span class="s0">in </span><span class="s1">os</span><span class="s2">.</span><span class="s1">listdir</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">) </span><span class="s0">if </span><span class="s1">f</span><span class="s2">.</span><span class="s1">endswith</span><span class="s2">(</span><span class="s3">&quot;.txt&quot;</span><span class="s2">)]</span>
+
+<span class="s1">print</span><span class="s2">(</span><span class="s3">&quot;Files found:&quot;</span><span class="s2">, </span><span class="s1">files</span><span class="s2">)</span>
+
+<span class="s0">for </span><span class="s1">file </span><span class="s0">in </span><span class="s1">files</span><span class="s2">:</span>
+    <span class="s1">old_path </span><span class="s2">= </span><span class="s1">os</span><span class="s2">.</span><span class="s1">path</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">, </span><span class="s1">file</span><span class="s2">)</span>
+    <span class="s1">new_path </span><span class="s2">= </span><span class="s1">os</span><span class="s2">.</span><span class="s1">path</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">, </span><span class="s1">file</span><span class="s2">.</span><span class="s1">replace</span><span class="s2">(</span><span class="s3">&quot;.txt&quot;</span><span class="s2">, </span><span class="s3">&quot;.locked&quot;</span><span class="s2">))</span>
+
+    <span class="s0">if </span><span class="s1">os</span><span class="s2">.</span><span class="s1">path</span><span class="s2">.</span><span class="s1">exists</span><span class="s2">(</span><span class="s1">old_path</span><span class="s2">):</span>
+        <span class="s1">os</span><span class="s2">.</span><span class="s1">rename</span><span class="s2">(</span><span class="s1">old_path</span><span class="s2">, </span><span class="s1">new_path</span><span class="s2">)</span>
+        <span class="s1">print</span><span class="s2">(</span><span class="s3">&quot;Encrypted:&quot;</span><span class="s2">, </span><span class="s1">file</span><span class="s2">)</span>
+        <span class="s1">time</span><span class="s2">.</span><span class="s1">sleep</span><span class="s2">(</span><span class="s4">2</span><span class="s2">)</span></pre>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<html>
+<head>
+<title>database.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+database.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">sqlite3</span>
+<span class="s0">import </span><span class="s1">hashlib</span>
+
+
+<span class="s0">def </span><span class="s1">init_db</span><span class="s2">():</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">sqlite3</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s3">&quot;alerts.db&quot;</span><span class="s2">)</span>
+    <span class="s1">cursor </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+
+    <span class="s4"># Alerts table</span>
+    <span class="s1">cursor</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span><span class="s3">&quot;&quot;&quot; 
+    CREATE TABLE IF NOT EXISTS alerts ( 
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        message TEXT, 
+        timestamp TEXT 
+    ) 
+    &quot;&quot;&quot;</span><span class="s2">)</span>
+
+    <span class="s4"># Users table</span>
+    <span class="s1">cursor</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span><span class="s3">&quot;&quot;&quot; 
+    CREATE TABLE IF NOT EXISTS users ( 
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        username TEXT UNIQUE, 
+        password TEXT 
+    ) 
+    &quot;&quot;&quot;</span><span class="s2">)</span>
+
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">commit</span><span class="s2">()</span>
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+
+
+<span class="s4"># =========================</span>
+<span class="s4"># 🔐 PASSWORD HASHING</span>
+<span class="s4"># =========================</span>
+
+<span class="s0">def </span><span class="s1">hash_password</span><span class="s2">(</span><span class="s1">password</span><span class="s2">):</span>
+    <span class="s0">return </span><span class="s1">hashlib</span><span class="s2">.</span><span class="s1">sha256</span><span class="s2">(</span><span class="s1">password</span><span class="s2">.</span><span class="s1">encode</span><span class="s2">()).</span><span class="s1">hexdigest</span><span class="s2">()</span>
+
+
+<span class="s4"># =========================</span>
+<span class="s4"># 🚨 ALERT FUNCTIONS</span>
+<span class="s4"># =========================</span>
+
+<span class="s0">def </span><span class="s1">insert_alert</span><span class="s2">(</span><span class="s1">message</span><span class="s2">, </span><span class="s1">timestamp</span><span class="s2">):</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">sqlite3</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s3">&quot;alerts.db&quot;</span><span class="s2">)</span>
+    <span class="s1">cursor </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+
+    <span class="s1">cursor</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span>
+        <span class="s3">&quot;INSERT INTO alerts (message, timestamp) VALUES (?, ?)&quot;</span><span class="s2">,</span>
+        <span class="s2">(</span><span class="s1">message</span><span class="s2">, </span><span class="s1">timestamp</span><span class="s2">)</span>
+    <span class="s2">)</span>
+
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">commit</span><span class="s2">()</span>
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+
+
+<span class="s0">def </span><span class="s1">get_alerts</span><span class="s2">():</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">sqlite3</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s3">&quot;alerts.db&quot;</span><span class="s2">)</span>
+    <span class="s1">cursor </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+
+    <span class="s1">cursor</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span><span class="s3">&quot;SELECT * FROM alerts ORDER BY id DESC&quot;</span><span class="s2">)</span>
+    <span class="s1">data </span><span class="s2">= </span><span class="s1">cursor</span><span class="s2">.</span><span class="s1">fetchall</span><span class="s2">()</span>
+
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s0">return </span><span class="s1">data</span>
+
+
+<span class="s4"># =========================</span>
+<span class="s4"># 👤 USER FUNCTIONS (UPDATED)</span>
+<span class="s4"># =========================</span>
+
+<span class="s0">def </span><span class="s1">register_user</span><span class="s2">(</span><span class="s1">username</span><span class="s2">, </span><span class="s1">password</span><span class="s2">):</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">sqlite3</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s3">&quot;alerts.db&quot;</span><span class="s2">)</span>
+    <span class="s1">cursor </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+
+    <span class="s0">try</span><span class="s2">:</span>
+        <span class="s1">hashed_pw </span><span class="s2">= </span><span class="s1">hash_password</span><span class="s2">(</span><span class="s1">password</span><span class="s2">)</span>
+
+        <span class="s1">cursor</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span>
+            <span class="s3">&quot;INSERT INTO users (username, password) VALUES (?, ?)&quot;</span><span class="s2">,</span>
+            <span class="s2">(</span><span class="s1">username</span><span class="s2">, </span><span class="s1">hashed_pw</span><span class="s2">)</span>
+        <span class="s2">)</span>
+
+        <span class="s1">conn</span><span class="s2">.</span><span class="s1">commit</span><span class="s2">()</span>
+        <span class="s0">return True</span>
+
+    <span class="s0">except</span><span class="s2">:</span>
+        <span class="s0">return False</span>
+
+    <span class="s0">finally</span><span class="s2">:</span>
+        <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+
+
+<span class="s0">def </span><span class="s1">login_user</span><span class="s2">(</span><span class="s1">username</span><span class="s2">, </span><span class="s1">password</span><span class="s2">):</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">sqlite3</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span><span class="s3">&quot;alerts.db&quot;</span><span class="s2">)</span>
+    <span class="s1">cursor </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+
+    <span class="s1">hashed_pw </span><span class="s2">= </span><span class="s1">hash_password</span><span class="s2">(</span><span class="s1">password</span><span class="s2">)</span>
+
+    <span class="s1">cursor</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span>
+        <span class="s3">&quot;SELECT * FROM users WHERE username=? AND password=?&quot;</span><span class="s2">,</span>
+        <span class="s2">(</span><span class="s1">username</span><span class="s2">, </span><span class="s1">hashed_pw</span><span class="s2">)</span>
+    <span class="s2">)</span>
+
+    <span class="s1">user </span><span class="s2">= </span><span class="s1">cursor</span><span class="s2">.</span><span class="s1">fetchone</span><span class="s2">()</span>
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+
+    <span class="s0">return </span><span class="s1">user</span></pre>
+</body>
+</html>

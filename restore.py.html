@@ -1,0 +1,31 @@
+<html>
+<head>
+<title>restore.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+restore.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">os</span>
+
+<span class="s1">folder_path </span><span class="s2">= </span><span class="s3">&quot;test_folder&quot;</span>
+
+<span class="s0">for </span><span class="s1">file </span><span class="s0">in </span><span class="s1">os</span><span class="s2">.</span><span class="s1">listdir</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">):</span>
+    <span class="s0">if </span><span class="s1">file</span><span class="s2">.</span><span class="s1">endswith</span><span class="s2">(</span><span class="s3">&quot;.locked&quot;</span><span class="s2">):</span>
+        <span class="s1">old_path </span><span class="s2">= </span><span class="s1">os</span><span class="s2">.</span><span class="s1">path</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">, </span><span class="s1">file</span><span class="s2">)</span>
+        <span class="s1">new_name </span><span class="s2">= </span><span class="s1">file</span><span class="s2">.</span><span class="s1">replace</span><span class="s2">(</span><span class="s3">&quot;.locked&quot;</span><span class="s2">, </span><span class="s3">&quot;&quot;</span><span class="s2">)</span>
+        <span class="s1">new_path </span><span class="s2">= </span><span class="s1">os</span><span class="s2">.</span><span class="s1">path</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">, </span><span class="s1">new_name</span><span class="s2">)</span>
+
+        <span class="s1">os</span><span class="s2">.</span><span class="s1">rename</span><span class="s2">(</span><span class="s1">old_path</span><span class="s2">, </span><span class="s1">new_path</span><span class="s2">)</span>
+        <span class="s1">print</span><span class="s2">(</span><span class="s3">&quot;Restored:&quot;</span><span class="s2">, </span><span class="s1">new_name</span><span class="s2">)</span></pre>
+</body>
+</html>

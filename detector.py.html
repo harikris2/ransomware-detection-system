@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>detector.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+.s4 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+detector.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">os</span>
+<span class="s0">import </span><span class="s1">time</span>
+<span class="s0">import </span><span class="s1">threading</span>
+<span class="s0">import </span><span class="s1">datetime</span>
+<span class="s0">from </span><span class="s1">database </span><span class="s0">import </span><span class="s1">insert_alert</span>
+
+<span class="s1">folder_path </span><span class="s2">= </span><span class="s3">&quot;test_folder&quot;</span>
+
+<span class="s1">alerts </span><span class="s2">= []</span>
+<span class="s1">running </span><span class="s2">= </span><span class="s0">False</span>
+
+
+<span class="s0">def </span><span class="s1">add_alert</span><span class="s2">(</span><span class="s1">message</span><span class="s2">):</span>
+    <span class="s1">print</span><span class="s2">(</span><span class="s1">message</span><span class="s2">)</span>
+    <span class="s1">alerts</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">message</span><span class="s2">)</span>
+
+    <span class="s1">timestamp </span><span class="s2">= </span><span class="s1">str</span><span class="s2">(</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">())</span>
+    <span class="s1">insert_alert</span><span class="s2">(</span><span class="s1">message</span><span class="s2">, </span><span class="s1">timestamp</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">monitor_folder</span><span class="s2">():</span>
+    <span class="s0">global </span><span class="s1">running</span>
+
+    <span class="s1">previous_locked </span><span class="s2">= </span><span class="s1">set</span><span class="s2">()</span>
+
+    <span class="s0">while </span><span class="s1">running</span><span class="s2">:</span>
+        <span class="s0">try</span><span class="s2">:</span>
+            <span class="s1">current_files </span><span class="s2">= </span><span class="s1">os</span><span class="s2">.</span><span class="s1">listdir</span><span class="s2">(</span><span class="s1">folder_path</span><span class="s2">)</span>
+
+            <span class="s1">current_locked </span><span class="s2">= </span><span class="s1">set</span><span class="s2">(</span>
+                <span class="s2">[</span><span class="s1">f </span><span class="s0">for </span><span class="s1">f </span><span class="s0">in </span><span class="s1">current_files </span><span class="s0">if </span><span class="s1">f</span><span class="s2">.</span><span class="s1">endswith</span><span class="s2">(</span><span class="s3">&quot;.locked&quot;</span><span class="s2">)]</span>
+            <span class="s2">)</span>
+
+            <span class="s1">new_locked </span><span class="s2">= </span><span class="s1">current_locked </span><span class="s2">- </span><span class="s1">previous_locked</span>
+
+            <span class="s0">for </span><span class="s1">file </span><span class="s0">in </span><span class="s1">new_locked</span><span class="s2">:</span>
+                <span class="s1">add_alert</span><span class="s2">(</span><span class="s3">f&quot;</span><span class="s0">{</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">datetime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">()</span><span class="s0">} </span><span class="s3">🚨 Detected: </span><span class="s0">{</span><span class="s1">file</span><span class="s0">}</span><span class="s3">&quot;</span><span class="s2">)</span>
+
+            <span class="s1">previous_locked </span><span class="s2">= </span><span class="s1">current_locked</span>
+
+        <span class="s0">except </span><span class="s1">Exception </span><span class="s0">as </span><span class="s1">e</span><span class="s2">:</span>
+            <span class="s1">print</span><span class="s2">(</span><span class="s3">&quot;Error:&quot;</span><span class="s2">, </span><span class="s1">e</span><span class="s2">)</span>
+
+        <span class="s1">time</span><span class="s2">.</span><span class="s1">sleep</span><span class="s2">(</span><span class="s4">1</span><span class="s2">)</span>
+
+
+<span class="s0">def </span><span class="s1">start_monitoring</span><span class="s2">():</span>
+    <span class="s0">global </span><span class="s1">running</span>
+    <span class="s0">if not </span><span class="s1">running</span><span class="s2">:</span>
+        <span class="s1">running </span><span class="s2">= </span><span class="s0">True</span>
+        <span class="s1">thread </span><span class="s2">= </span><span class="s1">threading</span><span class="s2">.</span><span class="s1">Thread</span><span class="s2">(</span><span class="s1">target</span><span class="s2">=</span><span class="s1">monitor_folder</span><span class="s2">)</span>
+        <span class="s1">thread</span><span class="s2">.</span><span class="s1">daemon </span><span class="s2">= </span><span class="s0">True</span>
+        <span class="s1">thread</span><span class="s2">.</span><span class="s1">start</span><span class="s2">()</span>
+
+
+<span class="s0">def </span><span class="s1">stop_monitoring</span><span class="s2">():</span>
+    <span class="s0">global </span><span class="s1">running</span>
+    <span class="s1">running </span><span class="s2">= </span><span class="s0">False</span></pre>
+</body>
+</html>
